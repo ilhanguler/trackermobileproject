@@ -212,9 +212,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-
-
-
 class NewsListScreen extends StatefulWidget {
   const NewsListScreen({super.key});
 
@@ -237,6 +234,7 @@ class _NewsListScreenState extends State<NewsListScreen> {
 
     // Initialize at least one provider
     newsProviders.add(NewsProvider());
+    print("length of nP: ${newsProviders.length}");
 
     timer = Timer.periodic(const Duration(seconds: 5), (timer) async {
       // Call initData on the selected provider
@@ -292,26 +290,30 @@ class _NewsListScreenState extends State<NewsListScreen> {
             ],
           ),
         ),
-        body: ListView.builder(
-          itemCount: newsProviders[selectedProviderIndex].newsList.length,
-          itemBuilder: (context, index) {
-            return ListTile(
-              title: Text(newsProviders[selectedProviderIndex].newsList[index].title),
-              subtitle: Text(
-                'Published: ${newsProviders[selectedProviderIndex].newsList[index].date.toString()}',
-              ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => NewsDetailScreen(
-                        news: newsProviders[selectedProviderIndex].newsList[index]),
-                  ),
-                );
-              },
-            );
-          },
-        ),
+        body: Consumer<NewsProvider>(builder: (context, provider, child) {
+          return ListView.builder(
+            itemCount: newsProviders[selectedProviderIndex].newsList.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                title: Text(
+                    newsProviders[selectedProviderIndex].newsList[index].title),
+                subtitle: Text(
+                  'Published: ${newsProviders[selectedProviderIndex].newsList[index].date.toString()}',
+                ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NewsDetailScreen(
+                          news: newsProviders[selectedProviderIndex]
+                              .newsList[index]),
+                    ),
+                  );
+                },
+              );
+            },
+          );
+        }),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             _showAddProviderDialog(context);
